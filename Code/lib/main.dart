@@ -37,12 +37,33 @@ class _MyHomePageState extends State<MyHomePage> {
 
   var items = [
     'Full body',
-    'Push/pull Leg',
+    'Leg',
     'Chest',
+    'Shoulders',
     'Back',
+    'Arms',
     'Cardio',
+    'Other'
   ];
+
+  var maptype = {
+    'Full body':1,
+    'Leg':2,
+    'Chest':3,
+    'Shoulders':4,
+    'Back':5,
+    'Arms':6,
+    'Cardio':7,
+    'Other':0
+  };
+
+  var typeID;
+
+  // nom de l'entrainement
+  String fullName = ''; 
   final myController = TextEditingController();
+  
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -53,6 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double screen_height = MediaQuery.of(context).size.height;
+    double screen_width = MediaQuery.of(context).size.width;
     return Scaffold(
         appBar: AppBar(
           leading: Row(
@@ -95,12 +118,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
               
               Positioned( //Container NAME
-                left: MediaQuery.of(context).size.width * 0.05,
-                top: MediaQuery.of(context).size.height * 0.10, 
+                left: screen_width * 0.05,
+                top: screen_height * 0.10, 
                 child:Stack(children: <Widget>[
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: MediaQuery.of(context).size.height * 0.10,
+                    width: screen_width * 0.9,
+                    height: screen_height * 0.10,
                     decoration: BoxDecoration(color: Color.fromARGB(255, 61, 60, 60), borderRadius: BorderRadius.circular(17)),
                     child: Container( //containeur du texte
                       //margin: const EdgeInsets.only(left:0.5, top: 15),
@@ -129,20 +152,27 @@ class _MyHomePageState extends State<MyHomePage> {
                       
                       hintText: 'Enter a name',
                       ),
+                      onChanged: (text) 
+                      {
+                        setState(() {
+                          fullName=text;
+                          print(fullName);
+                        });
+                      },
                     )
                   )
-                                      
+                                     
                   
                 ]),
               ),
                 
 
               Positioned( //Container Type
-              left: MediaQuery.of(context).size.width * 0.05,
-              top: MediaQuery.of(context).size.height * 0.23,
+              left: screen_width * 0.05,
+              top: screen_height * 0.23,
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: MediaQuery.of(context).size.height * 0.10,
+                width: screen_width * 0.9,
+                height: screen_height  * 0.10,
                 decoration: BoxDecoration(color: Color.fromARGB(255, 61, 60, 60), borderRadius: BorderRadius.circular(17)),
                 child: Container( //containeur du texte
                   width: double.infinity,
@@ -160,8 +190,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 //Menu déroulant
                 Positioned(
-                left: MediaQuery.of(context).size.width * 0.35,
-                top: MediaQuery.of(context).size.height * 0.25,
+                left: screen_width * 0.35,
+                top: screen_height * 0.25,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -178,16 +208,49 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontSize: 20)
                         ));
                       }).toList(),
+
                       onChanged: (String? newValue) {
                         setState(() {
                         dropdownvalue = newValue;
+                        typeID = maptype[dropdownvalue];
+                        print(dropdownvalue);
                         });
                       },
                     ),
                   ],
                 ),
                   
-                )
+                ),
+              Positioned(
+              right: screen_width * 0.07,
+              bottom: screen_height * 0.05,
+              child: FloatingActionButton.extended(
+                heroTag: "add",
+                onPressed: () async { setState(() {
+                  
+                    AllTrainings training =  AllTrainings(
+                        //id: 0,
+                        name: fullName,
+                        type: typeID,
+                        nbexo: 3,
+                        nbdone: 0);
+
+                    //insertTraining(training);
+                    /*
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => New_training(database: database)),
+                    );*/
+                  })
+                  ;
+                },
+                //icon: Icon(Icons.add),
+                backgroundColor: const Color.fromARGB(255, 100, 100, 180),
+                label: const Text('Validate'),
+                elevation: 10,
+              ),
+              ),
                 
 
 
@@ -241,6 +304,36 @@ class _MyHomePageState extends State<MyHomePage> {
    );
   }
 
+}
+
+
+
+
+
+///
+class AllTrainings {
+  //final int id;
+  final String name;
+  final int type;
+  final int nbexo;
+  final int nbdone;
+
+  const AllTrainings(
+      { //required this.id,
+      required this.name,
+      required this.type,
+      required this.nbexo,
+      required this.nbdone});
+
+  Map<String, dynamic> toJson() {
+    return {
+      //'id': id,
+      'name': name,
+      'type': type,
+      'nbexo': nbexo,
+      'nbdone': nbdone
+    };
+  }
 }
 
 
